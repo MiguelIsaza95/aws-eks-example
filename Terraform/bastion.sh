@@ -12,8 +12,3 @@ ansible --version
 sudo apt-get install -y git
 pip install pip --upgrade
 pip install ansible --upgrade
-git clone https://github.com/MiguelIsaza95/Ansible_ramup.git
-cd Ansible_ramup
-
-# Run MYSQL playbook
-ansible-playbook mysql.yml

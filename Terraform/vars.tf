@@ -46,18 +46,6 @@ variable "key_name" {}
 variable "instance_type" {}
 variable "aws_key_pair" {}
 
-# DB configuraiton vars
-
-variable "db_instance_type" {}
-variable "db_username" {}
-variable "db_password" {}
-variable "initial_db_name" {
-  type        = string
-  description = "(optional) describe your variable"
-}
-variable "engine" {}
-variable "engine_version" {}
-
 # Backend vars
 variable "bucket_name" {}
 variable "acl" {}

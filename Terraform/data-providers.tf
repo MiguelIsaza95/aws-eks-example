@@ -16,6 +16,15 @@ data "aws_ami" "eks_latest" {
   }
 }
 
+data "aws_ami" "jenkins_latest" {
+  most_recent = true
+  owners      = ["486912667928"]
+  filter {
+    name   = "name"
+    values = ["jenkins-ami"]
+  }
+}
+
 data "aws_ami" "ubuntu_18_latest" {
   most_recent = true
   owners      = ["099720109477"]

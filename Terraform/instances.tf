@@ -1,5 +1,4 @@
 resource "aws_instance" "bastion" {
-  depends_on                  = [aws_route53_record.db]
   monitoring                  = true
   ami                         = data.aws_ami.ubuntu_18_latest.id
   instance_type               = var.instance_type
@@ -37,11 +36,11 @@ resource "aws_instance" "nat" {
 
 resource "aws_instance" "jenkins" {
   monitoring                  = true
-  ami                         = data.aws_ami.ubuntu_18_latest.id
-  instance_type               = var.instance_type
+  ami                         = data.aws_ami.jenkins_latest.id
+  instance_type               = "t3.medium"
   key_name                    = var.key_name
   associate_public_ip_address = true
-  vpc_security_group_ids      = [aws_security_group.general_sg.id]
+  vpc_security_group_ids      = [aws_security_group.jenkins_sg.id]
   subnet_id                   = element(aws_subnet.dmz_public.*.id, 2)
   tags = {
     Name        = "jenkins"
@@ -50,52 +49,4 @@ resource "aws_instance" "jenkins" {
   lifecycle {
     create_before_destroy = true
   }
-}
-
-resource "aws_db_instance" "mysql_server" {
-  engine                = var.engine
-  engine_version        = var.engine_version
-  identifier            = "moviedb"
-  username              = var.db_username
-  password              = var.db_password
-  instance_class        = var.db_instance_type
-  allocated_storage     = 20
-  max_allocated_storage = 100
-  multi_az              = false
-  publicly_accessible   = false
-  port                  = 3306
-  tags = {
-    Name        = "Mysql_Server"
-    Environment = "Test"
-  }
-  vpc_security_group_ids = [aws_security_group.db_sg.id, aws_security_group.general_sg.id]
-  db_subnet_group_name   = aws_db_subnet_group.default.id
-
-  parameter_group_name = aws_db_parameter_group.default.id
-  skip_final_snapshot  = true
-}
-
-resource "aws_db_snapshot" "db_snapshot" {
-  db_instance_identifier = aws_db_instance.mysql_server.id
-  db_snapshot_identifier = "moviesnapshot1234"
-}
-
-resource "aws_db_parameter_group" "default" {
-  name   = "mysql-pg"
-  family = "mysql8.0"
-
-  parameter {
-    name  = "character_set_server"
-    value = "utf8"
-  }
-
-  parameter {
-    name  = "character_set_client"
-    value = "utf8"
-  }
-}
-
-resource "aws_db_subnet_group" "default" {
-  name       = "main"
-  subnet_ids = aws_subnet.clusterprivate.*.id
 }
