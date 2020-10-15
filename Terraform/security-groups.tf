@@ -96,6 +96,24 @@ resource "aws_security_group" "general_sg" {
   description = "Allow bastion and nat traffic from/to instances"
 }
 
+resource "aws_security_group" "control_plane_sg" {
+  name   = "Control Plane rules"
+  vpc_id = aws_vpc.test.id
+  ingress {
+    from_port       = 443
+    to_port         = 443
+    protocol        = "tcp"
+    security_groups = [aws_security_group.bastion_sg.id, aws_security_group.jenkins_sg.id]
+  }
+  egress {
+    from_port       = 1025
+    to_port         = 65535
+    protocol        = "tcp"
+    security_groups = [aws_security_group.bastion_sg.id, aws_security_group.jenkins_sg.id, aws_security_group.cluster_sg.id]
+  }
+  description = "Allow traffic to eks nodes that generate API server client traffic"
+}
+
 resource "aws_security_group" "cluster_sg" {
   name        = "Cluster rules"
   vpc_id      = aws_vpc.test.id
@@ -103,7 +121,7 @@ resource "aws_security_group" "cluster_sg" {
 }
 
 resource "aws_security_group" "cluster_nodes_sg" {
-  name   = "Cluster nodes rules"
+  name   = "Cluster nodes ssh access rules"
   vpc_id = aws_vpc.test.id
   ingress {
     from_port       = 22
@@ -115,7 +133,7 @@ resource "aws_security_group" "cluster_nodes_sg" {
 }
 
 resource "aws_security_group" "jenkins_sg" {
-  name   = "DB rules"
+  name   = "Jenkins rules"
   vpc_id = aws_vpc.test.id
   ingress {
     from_port   = 8080
