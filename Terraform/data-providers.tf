@@ -21,7 +21,7 @@ data "aws_ami" "jenkins_latest" {
   owners      = ["486912667928"]
   filter {
     name   = "name"
-    values = ["jenkins-ami"]
+    values = ["jenkins-springboot"]
   }
 }
 
