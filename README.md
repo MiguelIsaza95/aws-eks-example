@@ -1,1 +1,1 @@
-# eks_java_rampup
+# EKS deployment
